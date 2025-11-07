@@ -1,0 +1,398 @@
+/*  mainContainer */
+button#recordAttendance {
+    background: #707070;
+    border-radius: 25px;
+    border: none;
+    color: white;
+    width: 150px;
+    height: 50px;
+    font-size: 17px;
+
+    img {
+        width: 25px;
+        height: 25px;
+        vertical-align: middle;
+    }
+}
+
+button#loadTimetableData {
+    background: #707070;
+    border-radius: 25px;
+    border: none;
+    color: white;
+    width: 100px;
+    height: 50px;
+    font-size: 17px;
+    margin-left: 20px;
+
+    img {
+        width: 25px;
+        height: 25px;
+        vertical-align: middle;
+    }
+}
+
+#timetableContainer {
+    margin-top: 20px;
+}
+
+
+/* ---------------------- */
+/* fullTimetableContainer */
+/* ---------------------- */
+
+#fullTimetableContainer {
+    flex: 1;
+    overflow-y: auto;
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+}
+
+.dialog {
+    width: 90%;
+    height: 90%;
+    padding: 20px;
+    margin-top: 2%;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+
+    &[open] {
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+#modalDialog {
+
+    .filter-group {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .filter-group.show .dropdown-content {
+        display: block;
+    }
+
+    .filter-label {
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 2px;
+        white-space: nowrap;
+    }
+
+
+    .filter-section {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        align-items: flex-end;
+        margin-top: 20px;
+    }
+
+    .search-input-group {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+        margin-left: auto;
+    }
+
+    .button-primary {
+        background-color: #e0e0e0;
+        border: 1px solid #ccc;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        color: #555;
+        transition: all 0.2s ease-in-out;
+
+        &:hover {
+            background-color: #d0d0d0;
+        }
+
+        &#add {
+            font-weight: bold;
+        }
+    }
+
+    .search-input-group {
+        margin-left: auto;
+        /* Pushes the search input to the right */
+    }
+
+    .search-input-group input[type="text"] {
+        width: 180px;
+        padding: 10px 15px;
+        border: 1px solid #dcdcdc;
+        border-radius: 5px;
+        font-size: 14px;
+        color: #555;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+    .search-input-group input[type="text"]::placeholder {
+        color: #aaa;
+    }
+
+    .search-input-group input[type="text"]:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+    }
+
+    .search-results-summary {
+        text-align: right;
+        font-size: 13px;
+        color: #777;
+        /* margin-bottom: 15px; */
+    }
+
+
+    th,
+    td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+        font-size: 14px;
+        color: #333;
+    }
+
+    th {
+        font-weight: 600;
+        color: #555;
+        white-space: nowrap;
+        /* Prevent headers from wrapping too much */
+    }
+
+    td {
+        /* height: 50px; */
+        min-height: 10px;
+
+        & input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+        }
+
+        & a.course-name-link {
+            color: #333333;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            white-space: nowrap;
+
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+
+
+    /* 曜日 */
+    table th:nth-child(1),
+    table td:nth-child(1) {
+        width: 20px;
+        min-width: 10px;
+        text-align: center;
+    }
+
+    /* 時限 */
+    table th:nth-child(2),
+    table td:nth-child(2) {
+        width: 20px;
+        min-width: 10px;
+        text-align: center;
+    }
+
+    /* 学期 */
+    table th:nth-child(3),
+    table td:nth-child(3) {
+        width: 60px;
+    }
+
+    /* 学年 */
+    table th:nth-child(4),
+    table td:nth-child(4) {
+        width: 20px;
+        min-width: 10px;
+        text-align: center;
+    }
+
+    /* クラス */
+    table th:nth-child(5),
+    table td:nth-child(5) {
+        width: 40px;
+        text-align: center;
+    }
+
+    /* 科目名 */
+    table th:nth-child(6),
+    table td:nth-child(6) {
+        width: 300px;
+        min-width: 200px;
+    }
+
+    /* 担当者 */
+    table th:nth-child(7),
+    table td:nth-child(7) {
+        width: 200px;
+        min-width: 100px;
+    }
+
+    /* 講義コード */
+    table th:nth-child(8),
+    table td:nth-child(8) {
+        width: 80px;
+    }
+
+    /* 教室 */
+    table th:nth-child(9),
+    table td:nth-child(9) {
+        width: 20px;
+    }
+
+    /* 対象者 */
+    table th:nth-child(10),
+    table td:nth-child(10) {
+        width: 100px;
+        min-width: 50px;
+    }
+
+    /* 備考欄 */
+    table th:nth-child(11),
+    table td:nth-child(11) {
+        width: 120px;
+        min-width: 110px;
+    }
+
+    /* シラバス */
+    table th:nth-child(12),
+    table td:nth-child(12) {
+        width: 50px;
+        text-align: center;
+    }
+
+    thead {
+        background-color: #f7f7f7;
+
+        th {
+            position: sticky;
+            top: 0;
+            background-color: #f7f7f7;
+            z-index: 10;
+        }
+    }
+
+    tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+
+    tbody tr:nth-child(odd) {
+        background-color: #ffffff;
+        /* 奇数行の背景色（白など） */
+    }
+
+    tbody tr:nth-child(even) {
+        background-color: #f9f9f9;
+        /* 偶数行の背景色（薄いグレーなど） */
+    }
+
+    /* 既存のホバー時のスタイルも考慮する */
+    tbody tr:hover {
+        background-color: #eaf6ff;
+        /* ホバー時の背景色 (少し明るい青など) */
+    }
+
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+        /* 他の要素の上に表示 */
+        border-radius: 5px;
+        top: 100%;
+        /* ボタンのすぐ下に配置 */
+        left: 0;
+        margin-top: 5px;
+        /* ボタンとの隙間 */
+    }
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+
+    .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        cursor: pointer;
+    }
+
+    .dropdown-content a:hover {
+        background-color: #f1f1f1;
+    }
+
+    .notFoundMsg {
+        margin-left: 10px;
+        padding: 5px;
+    }
+}
+
+
+/* ------------------------ */
+/* responsive configuration */
+/* ------------------------ */
+@media (max-width: 600px) {
+    table {
+        width: 100%;
+    }
+
+    thead {
+        display: none;
+    }
+
+    tr {
+        padding: 0.5em;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.2em 0.5em;
+    }
+
+    th,
+    td {
+        padding: 0px;
+        ;
+
+        &[data-sp-display="none"] {
+            display: none;
+        }
+    }
+
+    td {
+        border: none;
+
+        &[data-sp-display="primary"] {
+            font-size: 1.2em;
+            font-weight: bold;
+            /* flex-basis: 100%; */
+        }
+
+        &[data-sp-display="secondary"] {
+            padding: 0 0.8em;
+            border-radius: 0.5lh;
+        }
+    }
+}

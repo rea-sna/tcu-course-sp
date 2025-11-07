@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>今日の時間割</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js"></script>
+    <script src="dialog.js"></script>
+</head>
+
+<body>
+    <section id="mainContainer">
+
+        <h1>時間割</h1>
+        <button id="recordAttendance">
+            <img src="./resource/armchair.svg" alt="出席を記録">
+            出席記録
+        </button>
+        <button id="loadTimetableData">
+            <img src="./resource/plus.svg" alt="追加">
+            追加
+        </button>
+
+        <div id="timetableContainer">
+            <table id="timetable">
+                <thead>
+                    <tr>
+                        <th>教科名</th>
+                        <th>担当者</th>
+                        <th>講義コード</th>
+                        <th>出欠状況</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </section>
+    <!-- //////////////////////////////// -->
+    <!-- ポップアップダイアログ（時間割の追加） -->
+    <!-- //////////////////////////////// -->
+    <dialog id="modalDialog" class="dialog">
+        <div id="dialog-container">
+            <header>
+                <h2>時間割の追加</h2>
+            </header>
+
+            <form method="dialog">
+                <button class="button-primary" id="add" type="submit" value="add">追加</button>
+                <button class="button-primary" id="cancel" type="submit" value="cancel">キャンセル</button>
+            </form>
+            <!-- フィルター関連（リセットボタン、フィールド含む） -->
+            <div class="filter-section">
+                <!-- フィルター：開講時期 -->
+                <div class="filter-group">
+                    <span class="filter-label">開講時期</span>
+                    <select name="semesterSelect" id="semesterSelect">
+                        <option value="all">すべて</option>
+                        <option value="前期前半">前期前半</option>
+                        <option value="前期後半">前期後半</option>
+                        <option value="後期前半">後期前半</option>
+                        <option value="後期後半">後期後半</option>
+                        <option value="集中">集中講義</option>
+                    </select>
+                </div>
+                <!-- フィルター：曜日 -->
+                <div class="filter-group">
+                    <span class="filter-label">開講曜日</span>
+                    <select name="openDayOfWeekSelect" id="openDayOfWeekSelect">
+                        <option value="all">すべて</option>
+                        <option value="月">月</option>
+                        <option value="火">火</option>
+                        <option value="水">水</option>
+                        <option value="木">木</option>
+                        <option value="金">金</option>
+                        <option value="土">土</option>
+                    </select>
+                </div>
+                <!-- フィルター：時限 -->
+                <div class="filter-group">
+                    <span class="filter-label">時限</span>
+                    <select name="openTimeSelect" id="openTimeSelect">
+                        <option value="all">すべて</option>
+                        <option value="1">1限</option>
+                        <option value="2">2限</option>
+                        <option value="3">3限</option>
+                        <option value="4">4限</option>
+                        <option value="5">5限</option>
+                    </select>
+                </div>
+                <!-- フィルター：対象学年 -->
+                <div class="filter-group">
+                    <span class="filter-label">対象学年</span>
+                    <select name="targetGradeSelect" id="targetGradeSelect">
+                        <option value="all">すべて</option>
+                        <option value="1">1年</option>
+                        <option value="2">2年</option>
+                        <option value="3">3年</option>
+                        <option value="4">4年</option>
+                    </select>
+                </div>
+                <!-- フィルター：リセットボタン -->
+                <button class="button-primary">リセット</button>
+                <!-- フィルター：テキストボックス -->
+                <div class="search-input-group">
+                    <input type="text" id="subjectNameSearch" placeholder="科目名を入力して絞り込み">
+                </div>
+            </div>
+        </div>
+
+        <div class="search-results-summary">
+            <p>XX件の検索結果</p>
+        </div>
+
+        <div id="fullTimetableContainer">
+            <table id="fullTimetable">
+                <thead>
+                    <!-- ここにヘッダー行が自動で入る -->
+                </thead>
+                <tbody>
+                    <!-- ここにデータ行が自動で入る -->
+                </tbody>
+            </table>
+        </div>
+
+
+        </div>
+    </dialog>
+</body>
+
+</html>
