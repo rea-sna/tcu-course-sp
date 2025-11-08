@@ -1,11 +1,14 @@
 /*  mainContainer */
 body {
     /* background: #1d2741; */
+    font-family: "noto-sans-cjk-jp", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+
 }
 
 .mainContainer {
     text-align: center;
-    /* color: #ffffff; */
 
     & h1 {
         font-size: 36px;
@@ -190,7 +193,6 @@ body {
         font-weight: 600;
         color: #555;
         white-space: nowrap;
-        /* Prevent headers from wrapping too much */
     }
 
     td {

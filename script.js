@@ -37,6 +37,15 @@ const dataName = {
     備考: "notes"
 }
 
+const shortenSemester = {
+    前期前半: "1Q",
+    前期後半: "2Q",
+    後期前半: "3Q",
+    後期後半: "4Q",
+    通年: "通年",
+    集中講義: "集中"
+}
+
 var isShowedModal = false;
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -44,6 +53,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const dialogButton = document.getElementById('loadTimetableData');
     const addButton = document.querySelector('#dialog-container button#add');
     const cancelButton = document.querySelector('#dialog-container button#cancel');
+    const dataInfo = document.getElementById("dataInfo");
+    dataInfo.innerHTML = `保存されている授業：${loadSavedItems().length}件<br>${loadSavedItems()}`;
 
     // CSVを読み込むよ
     fetch("./resource/timetable.csv")
@@ -195,7 +206,9 @@ function createTableBodyRows(tbody, records, keyword, addButton) {
                 const syllabusBaseURL = "https://websrv.tcu.ac.jp/tcu_web_v3/slbssbdr.do?value(risyunen)=2025&value(semekikn)=1&value(kougicd)=";
                 const classId = record["講義コード"];
                 const syllabusURL = `${syllabusBaseURL}${encodeURIComponent(classId)}`;
-                td.innerHTML = `<a href='${syllabusURL}' target="_blank" class='course-name-link' >${record[key]}</a>`;
+                // td.innerHTML = `<a href='${syllabusURL}' target="_blank" class='course-name-link' >${record[key]}</a>`;
+
+                td.innerHTML = `<p id="sp-label">${key}（クリックでシラバスに遷移）</p><a href='${syllabusURL}' target="_blank" class='course-name-link' >${record[key]}</a>`;
 
 
                 if (keyword) {
@@ -207,6 +220,10 @@ function createTableBodyRows(tbody, records, keyword, addButton) {
                 }
 
                 tr.appendChild(td);
+
+                // } else if (key === "学期") {
+                //     td.innerHTML = `<p id="sp-label">${key}</p>${shortenSemester[record[key]] || record[key]}`;
+                //     tr.appendChild(td);
 
             } else if (key !== "受講対象/再履修者科目名") {
                 recordText = record[key] === "" ? "-" : record[key];
