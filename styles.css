@@ -393,14 +393,46 @@ body {
 
     tr {
         padding: 0.5em;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
         gap: 0.2em 0.5em;
+
+
+        #dow,
+        #hour,
+        #semester,
+        #schoolYear,
+        #class {
+            grid-column: span 1 !important;
+
+        }
+
+        #subject {
+            grid-column: span 5 !important;
+        }
+
+        #teacher {
+            grid-column: span 3 !important;
+        }
+
+        #courseCode {
+            grid-column: span 2 !important;
+        }
+
+
+        #checkbox {
+            grid-column: span 1 !important;
+        }
+
+        #room,
+        #notes {
+            grid-column: span 2 !important;
+        }
     }
 
     th,
     td {
+        box-sizing: border-box;
         padding: 6px 10px !important;
 
         &[data-sp-display="none"] {
@@ -409,10 +441,13 @@ body {
     }
 
     td {
+        line-break: strict;
+        word-break: break-all;
         border: none;
 
+
         &[data-sp-display="primary"] {
-            font-size: 1.1em !important;
+            font-size: 1.3em !important;
             font-weight: bold;
             /* flex-basis: 100%; */
         }
@@ -420,14 +455,20 @@ body {
         &[data-sp-display="secondary"] {
             /* padding: 0 0.8em; */
             /* border-radius: 0.5lh; */
+
+            font-size: 1em !important;
             font-weight: bold;
         }
 
         &[data-sp-display="normal"] {
             /* padding: 0 0.8em; */
             border-radius: 0.5lh;
+
+            font-size: 1em !important;
             font-weight: bold;
         }
+
+
 
         & #checkbox {
             width: 25px;
@@ -446,87 +487,90 @@ body {
     /* 曜日 */
     table th:nth-child(1),
     table td:nth-child(1) {
-        min-width: calc(5% - 10px) !important;
-        max-width: 15% !important;
+        /* min-width: calc(5% - 10px) !important; */
+        /* max-width: 15% !important; */
+        width: 100% !important;
         text-align: center;
     }
 
     /* 時限 */
     table th:nth-child(2),
     table td:nth-child(2) {
-        min-width: calc(5% - 10px) !important;
-        max-width: 15% !important;
+        /* min-width: calc(5% - 10px) !important; */
+        width: 100% !important;
         text-align: center;
     }
 
     /* 学期 */
     table th:nth-child(3),
     table td:nth-child(3) {
-        min-width: calc(15% + 10px) !important;
-        max-width: 30% !important;
+        /* min-width: calc(15% + 10px) !important; */
+        width: 100% !important;
+        text-align: center !important;
     }
 
     /* 学年 */
     table th:nth-child(4),
     table td:nth-child(4) {
-        min-width: calc(5% - 10px) !important;
-        max-width: 15% !important;
-        text-align: center;
+        width: 100% !important;
+        text-align: center !important;
     }
 
     /* クラス */
     table th:nth-child(5),
     table td:nth-child(5) {
-        min-width: calc(15% + 10px) !important;
-        max-width: 30% !important;
+        width: 100% !important;
+        text-align: center !important;
     }
 
     /* 科目名 */
     table th:nth-child(6),
     table td:nth-child(6) {
-        width: 300px;
-        min-width: 200px;
+        width: 100% !important;
+        word-break: break-all;
+        text-align: center !important;
 
     }
 
     /* 担当者 */
     table th:nth-child(7),
     table td:nth-child(7) {
-        width: 55% !important;
-        min-width: 100px;
+        width: 100% !important;
+        text-align: center !important;
     }
 
     /* 講義コード */
     table th:nth-child(8),
     table td:nth-child(8) {
-        width: 30% !important;
+        width: 100% !important;
+        text-align: center !important;
     }
 
     /* 教室 */
     table th:nth-child(9),
     table td:nth-child(9) {
-        width: 30px;
+        width: 100% !important;
+        text-align: center !important;
     }
 
     /* 備考 */
     table th:nth-child(10),
     table td:nth-child(10) {
-        width: 150px;
-        min-width: 50px;
+        width: 100% !important;
+        text-align: center !important;
     }
 
     /* 備考欄 */
     table th:nth-child(11),
     table td:nth-child(11) {
-        width: 50px;
-        text-align: center;
-        /* margin-top: 15px; */
+        width: 100% !important;
+        text-align: center !important;
     }
 
     /* チェックボックス */
     table th:nth-child(12),
     table td:nth-child(12) {
-        width: 50px;
-        text-align: center;
+        width: 100% !important;
+        text-align: center !important;
     }
 }
