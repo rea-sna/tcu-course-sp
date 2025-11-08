@@ -1,0 +1,101 @@
+font {
+    /* Noto Sans CJK JP Thin */
+    font-family: "noto-sans-cjk-jp", sans-serif;
+    font-weight: 100;
+    font-style: normal;
+
+    /* Noto Sans CJK JP Light */
+    font-family: "noto-sans-cjk-jp", sans-serif;
+    font-weight: 200;
+    font-style: normal;
+
+    /* Noto Sans CJK JP DemiLight */
+    font-family: "noto-sans-cjk-jp", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+
+    /* Noto Sans CJK JP Regular */
+    font-family: "noto-sans-cjk-jp", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+
+    /* Noto Sans CJK JP Medium */
+    font-family: "noto-sans-cjk-jp", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+
+    /* Noto Sans CJK JP Bold */
+    font-family: "noto-sans-cjk-jp", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+
+    /* Noto Sans CJK JP Black */
+    font-family: "noto-sans-cjk-jp", sans-serif;
+    font-weight: 900;
+    font-style: normal;
+
+    /* DM Sans Regular */
+    font-family: "dm-sans", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    /* DM Sans Italic */
+    font-family: "dm-sans", sans-serif;
+    font-weight: 400;
+    font-style: italic;
+    /* DM Sans Bold */
+    font-family: "dm-sans", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    /* DM Sans Bold Italic */
+    font-family: "dm-sans", sans-serif;
+    font-weight: 700;
+    font-style: italic;
+    /* DM Sans 18pt Regular */
+    font-family: "dm-sans-18pt", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    /* DM Sans 18pt Italic */
+    font-family: "dm-sans-18pt", sans-serif;
+    font-weight: 400;
+    font-style: italic;
+    /* DM Sans 18pt Bold */
+    font-family: "dm-sans-18pt", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    /* DM Sans 18pt Bold Italic */
+    font-family: "dm-sans-18pt", sans-serif;
+    font-weight: 700;
+    font-style: italic;
+    /* DM Sans 24pt Regular */
+    font-family: "dm-sans-24pt", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    /* DM Sans 24pt Italic */
+    font-family: "dm-sans-24pt", sans-serif;
+    font-weight: 400;
+    font-style: italic;
+    /* DM Sans 24pt Bold */
+    font-family: "dm-sans-24pt", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    /* DM Sans 24pt Bold Italic */
+    font-family: "dm-sans-24pt", sans-serif;
+    font-weight: 700;
+    font-style: italic;
+    /* DM Sans 36pt Regular */
+    font-family: "dm-sans-36pt", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    /* DM Sans 36pt Italic */
+    font-family: "dm-sans-36pt", sans-serif;
+    font-weight: 400;
+    font-style: italic;
+    /* DM Sans 36pt Bold */
+    font-family: "dm-sans-36pt", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    /* DM Sans 36pt Bold Italic */
+    font-family: "dm-sans-36pt", sans-serif;
+    font-weight: 700;
+    font-style: italic;
+}

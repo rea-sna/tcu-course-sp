@@ -1,36 +1,56 @@
 /*  mainContainer */
-button#recordAttendance {
-    background: #707070;
-    border-radius: 25px;
-    border: none;
-    color: white;
-    width: 150px;
-    height: 50px;
-    font-size: 17px;
+body {
+    /* background: #1d2741; */
+}
 
-    img {
-        width: 25px;
-        height: 25px;
-        vertical-align: middle;
+.mainContainer {
+    text-align: center;
+    /* color: #ffffff; */
+
+    & h1 {
+        font-size: 36px;
+        margin-top: 50px;
+    }
+
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    ul li {
+        display: inline-block;
+        padding: 15px;
+        font-size: 20px;
+    }
+
+    button {
+        background: #769FCD;
+        border-radius: 25px;
+        border: none;
+        color: #f0f0f0;
+        width: 150px;
+        height: 50px;
+        font-size: 18px;
+        font-weight: bold;
+        border: 1px solid #ffffff;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+
+        img {
+            width: 25px;
+            height: 25px;
+            vertical-align: middle;
+        }
+
+        &:hover {
+            background: #5a7ea8;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
     }
 }
 
-button#loadTimetableData {
-    background: #707070;
-    border-radius: 25px;
-    border: none;
-    color: white;
-    width: 100px;
-    height: 50px;
-    font-size: 17px;
-    margin-left: 20px;
 
-    img {
-        width: 25px;
-        height: 25px;
-        vertical-align: middle;
-    }
-}
+
 
 #timetableContainer {
     margin-top: 20px;
@@ -129,7 +149,8 @@ button#loadTimetableData {
     }
 
     .search-input-group input[type="text"] {
-        width: 180px;
+        width: 250px;
+        ;
         padding: 10px 15px;
         border: 1px solid #dcdcdc;
         border-radius: 5px;
@@ -193,6 +214,10 @@ button#loadTimetableData {
                 text-decoration: underline;
             }
         }
+
+        & p#sp-label {
+            display: none;
+        }
     }
 
 
@@ -230,7 +255,6 @@ button#loadTimetableData {
     table th:nth-child(5),
     table td:nth-child(5) {
         width: 40px;
-        text-align: center;
     }
 
     /* 科目名 */
@@ -238,6 +262,7 @@ button#loadTimetableData {
     table td:nth-child(6) {
         width: 300px;
         min-width: 200px;
+
     }
 
     /* 担当者 */
@@ -250,30 +275,31 @@ button#loadTimetableData {
     /* 講義コード */
     table th:nth-child(8),
     table td:nth-child(8) {
-        width: 80px;
+        width: 50px;
     }
 
     /* 教室 */
     table th:nth-child(9),
     table td:nth-child(9) {
-        width: 20px;
+        width: 30px;
     }
 
-    /* 対象者 */
+    /* 備考 */
     table th:nth-child(10),
     table td:nth-child(10) {
-        width: 100px;
+        width: 150px;
         min-width: 50px;
     }
 
     /* 備考欄 */
     table th:nth-child(11),
     table td:nth-child(11) {
-        width: 120px;
-        min-width: 110px;
+        width: 50px;
+        text-align: center;
+        /* margin-top: 15px; */
     }
 
-    /* シラバス */
+    /* チェックボックス */
     table th:nth-child(12),
     table td:nth-child(12) {
         width: 50px;
@@ -356,25 +382,26 @@ button#loadTimetableData {
 /* responsive configuration */
 /* ------------------------ */
 @media (max-width: 600px) {
-    table {
-        width: 100%;
-    }
 
     thead {
         display: none;
+    }
+
+    #fullTimetableContainer {
+        overflow-x: hidden !important;
     }
 
     tr {
         padding: 0.5em;
         display: flex;
         flex-wrap: wrap;
+        justify-content: space-between;
         gap: 0.2em 0.5em;
     }
 
     th,
     td {
-        padding: 0px;
-        ;
+        padding: 6px 10px !important;
 
         &[data-sp-display="none"] {
             display: none;
@@ -385,14 +412,121 @@ button#loadTimetableData {
         border: none;
 
         &[data-sp-display="primary"] {
-            font-size: 1.2em;
+            font-size: 1.1em !important;
             font-weight: bold;
             /* flex-basis: 100%; */
         }
 
         &[data-sp-display="secondary"] {
-            padding: 0 0.8em;
-            border-radius: 0.5lh;
+            /* padding: 0 0.8em; */
+            /* border-radius: 0.5lh; */
+            font-weight: bold;
         }
+
+        &[data-sp-display="normal"] {
+            /* padding: 0 0.8em; */
+            border-radius: 0.5lh;
+            font-weight: bold;
+        }
+
+        & #checkbox {
+            width: 25px;
+        }
+
+        & #sp-label {
+            display: block !important;
+            font-size: 8pt;
+            line-height: 0;
+            font-weight: normal;
+            ;
+        }
+    }
+
+
+    /* 曜日 */
+    table th:nth-child(1),
+    table td:nth-child(1) {
+        min-width: calc(5% - 10px) !important;
+        max-width: 15% !important;
+        text-align: center;
+    }
+
+    /* 時限 */
+    table th:nth-child(2),
+    table td:nth-child(2) {
+        min-width: calc(5% - 10px) !important;
+        max-width: 15% !important;
+        text-align: center;
+    }
+
+    /* 学期 */
+    table th:nth-child(3),
+    table td:nth-child(3) {
+        min-width: calc(15% + 10px) !important;
+        max-width: 30% !important;
+    }
+
+    /* 学年 */
+    table th:nth-child(4),
+    table td:nth-child(4) {
+        min-width: calc(5% - 10px) !important;
+        max-width: 15% !important;
+        text-align: center;
+    }
+
+    /* クラス */
+    table th:nth-child(5),
+    table td:nth-child(5) {
+        min-width: calc(15% + 10px) !important;
+        max-width: 30% !important;
+    }
+
+    /* 科目名 */
+    table th:nth-child(6),
+    table td:nth-child(6) {
+        width: 300px;
+        min-width: 200px;
+
+    }
+
+    /* 担当者 */
+    table th:nth-child(7),
+    table td:nth-child(7) {
+        width: 55% !important;
+        min-width: 100px;
+    }
+
+    /* 講義コード */
+    table th:nth-child(8),
+    table td:nth-child(8) {
+        width: 30% !important;
+    }
+
+    /* 教室 */
+    table th:nth-child(9),
+    table td:nth-child(9) {
+        width: 30px;
+    }
+
+    /* 備考 */
+    table th:nth-child(10),
+    table td:nth-child(10) {
+        width: 150px;
+        min-width: 50px;
+    }
+
+    /* 備考欄 */
+    table th:nth-child(11),
+    table td:nth-child(11) {
+        width: 50px;
+        text-align: center;
+        /* margin-top: 15px; */
+    }
+
+    /* チェックボックス */
+    table th:nth-child(12),
+    table td:nth-child(12) {
+        width: 50px;
+        text-align: center;
     }
 }

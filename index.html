@@ -8,22 +8,41 @@
     <link rel="stylesheet" href="styles.css">
     <script src="script.js"></script>
     <script src="dialog.js"></script>
+    <script>
+        (function (d) {
+            var config = {
+                kitId: 'vwj4hnx',
+                scriptTimeout: 3000,
+                async: true
+            },
+                h = d.documentElement, t = setTimeout(function () { h.className = h.className.replace(/\bwf-loading\b/g, "") + " wf-inactive"; }, config.scriptTimeout), tk = d.createElement("script"), f = false, s = d.getElementsByTagName("script")[0], a; h.className += " wf-loading"; tk.src = 'https://use.typekit.net/' + config.kitId + '.js'; tk.async = true; tk.onload = tk.onreadystatechange = function () { a = this.readyState; if (f || a && a != "complete" && a != "loaded") return; f = true; clearTimeout(t); try { Typekit.load(config) } catch (e) { } }; s.parentNode.insertBefore(tk, s)
+        })(document);
+    </script>
 </head>
 
 <body>
-    <section id="mainContainer">
+    <section class="mainContainer">
 
-        <h1>時間割</h1>
-        <button id="recordAttendance">
-            <img src="./resource/armchair.svg" alt="出席を記録">
-            出席記録
-        </button>
-        <button id="loadTimetableData">
-            <img src="./resource/plus.svg" alt="追加">
-            追加
-        </button>
+        <h1>こんばんは 🌙</h1>
+        <ul id="actionButtons">
+            <li>
+                <button id="recordAttendance">
+                    <img src="./resource/armchair.svg" alt="出席を記録">
+                    出席記録
+                </button>
+            </li>
+            <li>
+                <button id="loadTimetableData">
+                    <img src="./resource/plus.svg" alt="追加">
+                    追加
+                </button>
+            </li>
+        </ul>
 
         <div id="timetableContainer">
+            <ul id="dataInfo">
+                <!-- ここに動的に生成 -->
+            </ul>
             <table id="timetable">
                 <thead>
                     <tr>
@@ -100,28 +119,30 @@
                     </select>
                 </div>
                 <!-- フィルター：リセットボタン -->
-                <button class="button-primary">リセット</button>
+                <button class="button-primary">絞り込みをリセット</button>
                 <!-- フィルター：テキストボックス -->
                 <div class="search-input-group">
                     <input type="text" id="subjectNameSearch" placeholder="科目名を入力して絞り込み">
                 </div>
             </div>
+
+            <div class="search-results-summary">
+                <p>XX件の検索結果</p>
+            </div>
+
+            <div id="fullTimetableContainer">
+                <table id="fullTimetable">
+                    <thead>
+                        <!-- ここにヘッダー行が自動で入る -->
+                    </thead>
+                    <tbody>
+                        <!-- ここにデータ行が自動で入る -->
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <div class="search-results-summary">
-            <p>XX件の検索結果</p>
-        </div>
 
-        <div id="fullTimetableContainer">
-            <table id="fullTimetable">
-                <thead>
-                    <!-- ここにヘッダー行が自動で入る -->
-                </thead>
-                <tbody>
-                    <!-- ここにデータ行が自動で入る -->
-                </tbody>
-            </table>
-        </div>
 
 
         </div>

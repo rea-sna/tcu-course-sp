@@ -12,56 +12,38 @@ const DATA_TYPES = {
     備考: "string"
 };
 const DISPLAIES_FOR_SP = {
-    曜: "primary",
-    限: "primary",
-    学期: "secondary",
-    クラス: "secondary",
+    曜: "secondary",
+    限: "secondary",
+    学期: "normal",
+    年: "normal",
+    クラス: "normal",
     科目名: "primary",
-    担当者: "secondary",
-    講義コード: "secondary",
-    教室: "secondary",
-    備考: "secondary"
+    担当者: "normal",
+    講義コード: "normal",
+    教室: "normal",
+    備考: "normal"
 };
+
+const dataName = {
+    曜: "dow",
+    限: "hour",
+    学期: "semester",
+    年: "schoolYear",
+    クラス: "class",
+    科目名: "subject",
+    担当者: "teacher",
+    講義コード: "courseCode",
+    教室: "room",
+    備考: "notes"
+}
+
+var isShowedModal = false;
 
 document.addEventListener("DOMContentLoaded", function () {
     const modalDialog = document.getElementById('modalDialog');
     const dialogButton = document.getElementById('loadTimetableData');
     const addButton = document.querySelector('#dialog-container button#add');
     const cancelButton = document.querySelector('#dialog-container button#cancel');
-
-    dialogButton.addEventListener('click', async () => {
-        console.log("clicked");
-        modalDialog.showModal();
-
-        if (getCheckedCount() > 0) {
-            addButton.innerHTML = `更新`;
-        } else {
-            addButton.innerHTML = `追加（${count}件）`;
-        }
-
-        loadCheckboxStatus();
-
-        // モーダルダイアログを表示する際に背景部分がスクロールしないようにする
-        document.documentElement.style.overflow = "hidden";
-    });
-
-    addButton.addEventListener('click', (event) => {
-        const checkedItems = getCheckedItems();
-        console.log("追加する講義コード一覧:", checkedItems);
-        // JSON形式にしてから保存する（常に上書き）（stringしか保存できない）
-        localStorage.setItem("addedCourses", JSON.stringify(checkedItems));
-
-        event.preventDefault();
-        modalDialog.close();
-        document.documentElement.style.overflow = "auto";
-    });
-
-    cancelButton.addEventListener('click', (event) => {
-        // 追加した分をすべて破棄する
-        event.preventDefault();
-        modalDialog.close();
-        document.documentElement.style.overflow = "auto";
-    });
 
     // CSVを読み込むよ
     fetch("./resource/timetable.csv")
@@ -79,10 +61,44 @@ document.addEventListener("DOMContentLoaded", function () {
             // チェックボックスが作成された後にイベントリスナーを追加
             updateCheckboxListeners(addButton);
         });
+
+    console.log(loadSavedItems());
+
+    dialogButton.addEventListener('click', async () => {
+        console.log("clicked");
+        modalDialog.showModal();
+        loadCheckboxStatus();
+        isShowedModal = true;
+
+        // モーダルダイアログを表示する際に背景部分がスクロールしないようにする
+        document.documentElement.style.overflow = "hidden";
+    });
+
+    addButton.addEventListener('click', (event) => {
+        const checkedItems = getCheckedItems();
+        console.log("追加する講義コード一覧:", checkedItems);
+        // JSON形式にしてから保存する（常に上書き）（stringしか保存できない）
+        localStorage.setItem("addedCourses", JSON.stringify(checkedItems));
+
+        event.preventDefault();
+        modalDialog.close();
+        isShowedModal = false;
+        document.documentElement.style.overflow = "auto";
+    });
+
+    cancelButton.addEventListener('click', (event) => {
+        // 追加した分をすべて破棄する
+        event.preventDefault();
+        modalDialog.close();
+        isShowedModal = false;
+        document.documentElement.style.overflow = "auto";
+    });
+
+
 });
 
 
-
+// CSVデータのパース
 function parseCSV(data) {
     // 文字コード関連の処理をしとく
     data = data.replace(/^\uFEFF/, '');
@@ -114,7 +130,7 @@ function parseCSV(data) {
     return records;
 }
 
-// 表の大枠？を作るよ
+// 表のヘッダー行を作るよ
 function createTableContents(timetable) {
     const thead = document.createElement("thead");
     const headerRow = document.createElement("tr");
@@ -172,13 +188,15 @@ function createTableBodyRows(tbody, records, keyword, addButton) {
 
         for (let key in record) {
             const td = document.createElement("td");
+            td.dataset.spDisplay = DISPLAIES_FOR_SP[key];
+            td.id = dataName[key];
 
             if (key === "科目名") {
-                td.dataset.spDisplay = DISPLAIES_FOR_SP[key];
                 const syllabusBaseURL = "https://websrv.tcu.ac.jp/tcu_web_v3/slbssbdr.do?value(risyunen)=2025&value(semekikn)=1&value(kougicd)=";
                 const classId = record["講義コード"];
                 const syllabusURL = `${syllabusBaseURL}${encodeURIComponent(classId)}`;
                 td.innerHTML = `<a href='${syllabusURL}' target="_blank" class='course-name-link' >${record[key]}</a>`;
+
 
                 if (keyword) {
                     const regexp = new RegExp(keyword, "g");
@@ -191,8 +209,10 @@ function createTableBodyRows(tbody, records, keyword, addButton) {
                 tr.appendChild(td);
 
             } else if (key !== "受講対象/再履修者科目名") {
-                td.dataset.spDisplay = DISPLAIES_FOR_SP[key]; // スマホの表示情報を dataset に与える
-                td.textContent = record[key]; // 各データセルに値を設定
+                recordText = record[key] === "" ? "-" : record[key];
+                td.innerHTML = `<p id="sp-label">${key}</p>${recordText}`;
+
+                // td.textContent = record[key]; // 各データセルに値を設定
                 const text = record[key];
 
                 if (keyword) {
@@ -203,11 +223,17 @@ function createTableBodyRows(tbody, records, keyword, addButton) {
                     td.innerHTML = replaced; // ハイライトを反映させるためにinnerHTMLを使用
                 }
                 tr.appendChild(td);
-            };
+            }
+
         }
 
         // チェックボックス関連の処理
         const checkboxTd = document.createElement("td");
+        checkboxTd.id = "checkbox";
+        const checkboxLabel = document.createElement("p");
+        checkboxLabel.id = "sp-label";
+        checkboxLabel.textContent = "追加";
+        checkboxTd.appendChild(checkboxLabel);
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         checkbox.className = "course-checkbox";
@@ -226,6 +252,10 @@ function createTableBodyRows(tbody, records, keyword, addButton) {
 
         tbody.appendChild(tr);
     }
+}
+
+function selectedClass_create_table() {
+
 }
 
 function getCheckedCount() {
@@ -252,7 +282,7 @@ function getCheckedItems() {
     return checkedItemIds;
 }
 
-function loadCheckedItems() {
+function loadSavedItems() {
     const storedData = localStorage.getItem("addedCourses");
     if (storedData) {
         return JSON.parse(storedData);
@@ -263,7 +293,7 @@ function loadCheckedItems() {
 
 function getDiff() {
     const allCheckboxes = document.querySelectorAll("#fullTimetableContainer tbody input[type='checkbox']");
-    const storedData = loadCheckedItems();
+    const storedData = loadSavedItems();
     const checkedCount = Array.from(allCheckboxes).filter(checkbox => checkbox.checked);
     const diffCount = checkedCount.filter(checkedCount => storedData.indexOf(checkedCount) === -1).length;
     return Math.abs(diffCount);
@@ -274,7 +304,7 @@ function loadCheckboxStatus() {
 
     allCheckboxes.forEach(checkbox => {
         // IDが一致する場合、チェックを入れる
-        if (loadCheckedItems().includes(checkbox.id)) {
+        if (loadSavedItems().includes(checkbox.id)) {
             checkbox.checked = true;
         }
     });
