@@ -71,26 +71,26 @@ document.addEventListener("DOMContentLoaded", function () {
     const addButton = document.querySelector('#dialog-container button#add');
     const cancelButton = document.querySelector('#dialog-container button#cancel');
     const dataInfo = document.getElementById("dataInfo");
-    dataInfo.innerHTML = `保存されている授業：${loadSavedItems().length}件<br>${loadSavedItems()}`;
+    const data = loadSavedItems();
+    dataInfo.innerHTML = `保存されている授業：${data["selectedClasses"].length}件<br>${data["selectedClasses"]}`;
 
-    // CSVを読み込む
-    fetch("./resource/timetable.csv")
-        .then(function (response) {
-            return response.text();
-        })
-        .then(function (data) {
-            const timetable = parseCSV(data);
-            const elements = createTableContents(timetable);
-            const master = document.getElementById("fullTimetableContainer");
-            const table = master.querySelector("table");
-            table.append(elements[0]); // thead
-            table.append(elements[1]); // tbody
+    // fetch("./resource/timetable.csv")
+    //     .then(function (response) {
+    //         return response.text();
+    //     })
+    //     .then(function (data) {
+    //         const timetable = parseCSV(data);
+    //         const elements = createTableContents(timetable);
+    //         const master = document.getElementById("fullTimetableContainer");
+    //         const table = master.querySelector("table");
+    //         table.append(elements[0]); // thead
+    //         table.append(elements[1]); // tbody
 
-            // チェックボックスが作成された後にイベントリスナーを追加
-            updateCheckboxListeners(addButton);
-        });
+    //         // チェックボックスが作成された後にイベントリスナーを追加
+    //         updateCheckboxListeners(addButton);
+    //     });
 
-    console.log(loadSavedItems());
+    loadTable();
 
     dialogButton.addEventListener('click', async () => {
         console.log("clicked");
@@ -105,15 +105,21 @@ document.addEventListener("DOMContentLoaded", function () {
         const checkedItems = getCheckedItems();
         console.log("追加する講義コード一覧:", checkedItems);
 
-        jsonForm["selectedClasses"].push(...checkedItems)
+        console.log("保存済みデータ:", loadSavedItems());
 
-        console.log("保存用データ:", jsonForm);
+        var data = loadSavedItems();
+        console.log("現在の保存データ:", data["selectedClasses"]);
+        console.log(typeof data["selectedClasses"]);
 
-        localStorage.removeItem("userData");
+        // チェックされている講義コードを追加する
+        checkedItems.forEach(item => {
+            if (!data["selectedClasses"].includes(item)) {
+                data["selectedClasses"].push(item);
+            }
+        });
 
         // LocalStorageに保存する
-        // json-strにして保存（文字列しか保存できないので）
-        localStorage.setItem("userData", JSON.stringify(jsonForm));
+        localStorage.setItem("userData", JSON.stringify(data));
 
         // 表示の更新
         refreshCourseDisplay();
@@ -145,9 +151,6 @@ function parseCSV(data) {
     const rows = data.split("\n");
     // ヘッダー行を取得する
     const headers = rows[0].split(",").map(header => header.trim());
-    // 検索件数を把握
-    const resultsSummary = document.querySelector(".search-results-summary p");
-    resultsSummary.textContent = `${rows.length - 1}件の検索結果`;
 
     // データ内容はこちらに入る
     const records = [];
@@ -214,98 +217,93 @@ function createTableBodyRows(tbody, records, keyword, addButton) {
     for (let i = 0; i < records.length; i++) {
         const record = records[i];
         const tr = document.createElement("tr");
+        const existData = loadSavedItems();
 
-        // キーワード検索のフィルタリング
-        if (keyword) {
-            let isMatch = false;
-            for (const key in record) {
-                if (record[key].includes(keyword)) {
-                    isMatch = true;
-                    break;
+        if (!existData["selectedClasses"].includes(record["講義コード"])) {
+            for (let key in record) {
+                const td = document.createElement("td");
+                td.dataset.spDisplay = DISPLAIES_FOR_SP[key];
+                td.id = dataName[key];
+
+                if (key === "科目名") {
+                    const syllabusBaseURL = "https://websrv.tcu.ac.jp/tcu_web_v3/slbssbdr.do?value(risyunen)=2025&value(semekikn)=1&value(kougicd)=";
+                    const classId = record["講義コード"];
+                    const syllabusURL = `${syllabusBaseURL}${encodeURIComponent(classId)}`;
+                    // td.innerHTML = `<a href='${syllabusURL}' target="_blank" class='course-name-link' >${record[key]}</a>`;
+
+                    td.innerHTML = `<p id="sp-label">${key}（クリックでシラバスに遷移）</p><a href='${syllabusURL}' target="_blank" class='course-name-link' >${record[key]}</a>`;
+
+
+                    if (keyword) {
+                        const regexp = new RegExp(keyword, "g");
+                        const replaced = td.innerHTML.replace(regexp, (match) => {
+                            return `<mark>${match}</mark>`;
+                        });
+                        td.innerHTML = replaced; // ハイライトを反映させるためにinnerHTMLを使用
+                    }
+
+                    tr.appendChild(td);
+
+                    // } else if (key === "学期") {
+                    //     td.innerHTML = `<p id="sp-label">${key}</p>${shortenSemester[record[key]] || record[key]}`;
+                    //     tr.appendChild(td);
+
+                } else if (key !== "受講対象/再履修者科目名") {
+                    recordText = record[key] === "" ? "-" : record[key];
+                    td.innerHTML = `<p id="sp-label">${key}</p>${recordText}`;
+                    const text = record[key];
+
+                    if (keyword) {
+                        const regexp = new RegExp(keyword, "g");
+                        const replaced = text.replace(regexp, (match) => {
+                            return `<mark>${match}</mark>`;
+                        });
+                        td.innerHTML = replaced; // ハイライトを反映させるためにinnerHTMLを使用
+                    }
+                    tr.appendChild(td);
                 }
+
             }
-            if (!isMatch) {
-                continue;
-            }
+
+            // チェックボックス関連の処理
+            const checkboxTd = document.createElement("td");
+            checkboxTd.id = "checkbox";
+            const checkboxLabel = document.createElement("p");
+            checkboxLabel.id = "sp-label";
+            checkboxLabel.textContent = "追加";
+            checkboxTd.appendChild(checkboxLabel);
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.className = "course-checkbox";
+            checkbox.id = `${record["講義コード"] || i}`;
+
+            // チェックボックス：changeイベントリスナー
+            checkbox.addEventListener("change", (event) => {
+                const box = event.target;
+                const boxId = box.id;
+                const isChecked = box.checked;
+                tsuikaikou_processing(boxId, isChecked);
+            });
+
+            checkboxTd.appendChild(checkbox);
+            tr.appendChild(checkboxTd);
+
+            tbody.appendChild(tr);
+
+            // 検索件数を把握
+            const resultsSummary = document.querySelector(".search-results-summary p");
+            resultsSummary.textContent = `${tbody.children.length - 1}件の検索結果`;
         }
-
-        for (let key in record) {
-            const td = document.createElement("td");
-            td.dataset.spDisplay = DISPLAIES_FOR_SP[key];
-            td.id = dataName[key];
-
-            if (key === "科目名") {
-                const syllabusBaseURL = "https://websrv.tcu.ac.jp/tcu_web_v3/slbssbdr.do?value(risyunen)=2025&value(semekikn)=1&value(kougicd)=";
-                const classId = record["講義コード"];
-                const syllabusURL = `${syllabusBaseURL}${encodeURIComponent(classId)}`;
-                // td.innerHTML = `<a href='${syllabusURL}' target="_blank" class='course-name-link' >${record[key]}</a>`;
-
-                td.innerHTML = `<p id="sp-label">${key}（クリックでシラバスに遷移）</p><a href='${syllabusURL}' target="_blank" class='course-name-link' >${record[key]}</a>`;
-
-
-                if (keyword) {
-                    const regexp = new RegExp(keyword, "g");
-                    const replaced = td.innerHTML.replace(regexp, (match) => {
-                        return `<mark>${match}</mark>`;
-                    });
-                    td.innerHTML = replaced; // ハイライトを反映させるためにinnerHTMLを使用
-                }
-
-                tr.appendChild(td);
-
-                // } else if (key === "学期") {
-                //     td.innerHTML = `<p id="sp-label">${key}</p>${shortenSemester[record[key]] || record[key]}`;
-                //     tr.appendChild(td);
-
-            } else if (key !== "受講対象/再履修者科目名") {
-                recordText = record[key] === "" ? "-" : record[key];
-                td.innerHTML = `<p id="sp-label">${key}</p>${recordText}`;
-                const text = record[key];
-
-                if (keyword) {
-                    const regexp = new RegExp(keyword, "g");
-                    const replaced = text.replace(regexp, (match) => {
-                        return `<mark>${match}</mark>`;
-                    });
-                    td.innerHTML = replaced; // ハイライトを反映させるためにinnerHTMLを使用
-                }
-                tr.appendChild(td);
-            }
-
-        }
-
-        // チェックボックス関連の処理
-        const checkboxTd = document.createElement("td");
-        checkboxTd.id = "checkbox";
-        const checkboxLabel = document.createElement("p");
-        checkboxLabel.id = "sp-label";
-        checkboxLabel.textContent = "追加";
-        checkboxTd.appendChild(checkboxLabel);
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.className = "course-checkbox";
-        checkbox.id = `${record["講義コード"] || i}`;
-
-        // チェックボックス：changeイベントリスナー
-        checkbox.addEventListener("change", (event) => {
-            const box = event.target;
-            const boxId = box.id;
-            const isChecked = box.checked;
-            tsuikaikou_processing(boxId, isChecked);
-        });
-
-        checkboxTd.appendChild(checkbox);
-        tr.appendChild(checkboxTd);
-
-        tbody.appendChild(tr);
     }
 }
 
 // 選択されている講義の数を取得
 function getCheckedCount() {
     const allCheckboxes = document.querySelectorAll("#fullTimetableContainer tbody input[type='checkbox']");
-    const checkedCount = Array.from(allCheckboxes).filter(checkbox => checkbox.checked).length;
-    return checkedCount;
+    const checkedCount = Array.from(allCheckboxes).filter(checkbox => checkbox.checked);
+    const idCount = checkedCount.map(item => item.id)
+    const removedDuplicates = Array.from(new Set(idCount)); // 重複をなくす
+    return removedDuplicates.length;
 }
 
 // 対開講の処理
@@ -320,32 +318,39 @@ function tsuikaikou_processing(id, isChecked) {
     });
 }
 
-// 選択されている講義コードをすべて取得
+// 現在画面上で選択されている講義コードをすべて取得
 function getCheckedItems() {
     const allCheckboxes = document.querySelectorAll("#fullTimetableContainer tbody input[type='checkbox']");
     const checkedItemIds = Array.from(allCheckboxes).filter(checkbox => checkbox.checked).map(checkbox => checkbox.id);
-    const removedDuplicates = Array.from(new Set(checkedItemIds)); // 重複を排除
+    const removedDuplicates = Array.from(new Set(checkedItemIds)); // 重複をなくす
     return removedDuplicates;
 }
 
 // 保存されている講義コードを取得
 function loadSavedItems() {
     const storedData = localStorage.getItem("userData");
-    if (storedData) {
-        return JSON.parse(storedData)["selectedClasses"] || [];
+    if (storedData !== null) {
+        return JSON.parse(storedData);
+        // return storedData;
     } else {
-        return [];
+        return jsonForm;
     }
 }
 
 // 現在選択中の講義と、保存されている講義の差分を取得
-function getDiff() {
-    const allCheckboxes = document.querySelectorAll("#fullTimetableContainer tbody input[type='checkbox']");
-    const storedData = loadSavedItems();
-    const checkedCount = Array.from(allCheckboxes).filter(checkbox => checkbox.checked);
-    const diffCount = checkedCount.filter(checkedCount => storedData.indexOf(checkedCount) === -1).length;
-    return Math.abs(diffCount);
-}
+// function getDiff() {
+//     const allCheckboxes = document.querySelectorAll("#fullTimetableContainer tbody input[type='checkbox']");
+//     const storedData = loadSavedItems();
+
+//     const checkedCount = Array.from(allCheckboxes).filter(checkbox => checkbox.checked).map(checkbox => checkbox.id);
+//     console.log("checkedCount:", checkedCount);
+//     console.log("storedData:", storedData);
+
+
+//     const diffCount = storedData.length - checkedCount.length;
+
+//     return Math.abs(diffCount);
+// }
 
 // 保存されている講義コードに基づいてチェックボックスの状態を復元
 function loadCheckboxStatus() {
@@ -353,7 +358,8 @@ function loadCheckboxStatus() {
 
     allCheckboxes.forEach(checkbox => {
         // IDが一致する場合、チェックを入れる
-        if (loadSavedItems().includes(checkbox.id)) {
+        const existData = loadSavedItems();
+        if (existData["selectedClasses"].includes(checkbox.id)) {
             checkbox.checked = true;
         }
     });
@@ -361,8 +367,7 @@ function loadCheckboxStatus() {
 
 // "追加"ボタンの表示を更新
 function updateButtonStatus(addButton) {
-    const count = getCheckedCount();
-    addButton.innerHTML = `追加（${getDiff()}件）`;
+    addButton.innerHTML = `追加（${getCheckedCount()}件）`;
 }
 
 // チェックボックスにイベントリスナーを追加
@@ -379,11 +384,14 @@ function updateCheckboxListeners(addButton) {
 function refreshCourseDisplay() {
     const storedData = localStorage.getItem("userData");
     try {
-        const addedCourses = JSON.parse(storedData)["selectedClasses"] || [];
+        const addedCourses = JSON.parse(storedData)["selectedClasses"];
         const dataInfo = document.getElementById("dataInfo");
         if (dataInfo) {
-            dataInfo.innerHTML = `保存されている授業:${addedCourses.length}件<br>${addedCourses}`;
+            dataInfo.innerHTML = `保存されている授業:${addedCourses.length} 件 <br> ${addedCourses} `;
         }
+
+        // location.reload();
+        loadTable();
 
         if (typeof loadCheckboxStatus === "function") {
             loadCheckboxStatus();
@@ -396,4 +404,26 @@ function refreshCourseDisplay() {
     } catch (e) {
         console.error("表示の更新に失敗しました:", e);
     }
+}
+
+function loadTable() {
+    fetch("./resource/timetable.csv")
+        .then(function (response) {
+            return response.text();
+        })
+        .then(function (data) {
+            const timetable = parseCSV(data);
+            const elements = createTableContents(timetable);
+            const master = document.getElementById("fullTimetableContainer");
+            const table = master.querySelector("table");
+
+            // 既存の内容をクリア
+            table.innerHTML = "";
+
+            table.append(elements[0]); // thead
+            table.append(elements[1]); // tbody
+
+            const addButton = document.querySelector('#dialog-container button#add');
+            updateCheckboxListeners(addButton);
+        });
 }
