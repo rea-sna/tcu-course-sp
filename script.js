@@ -46,17 +46,34 @@ const shortenSemester = {
     集中講義: "集中"
 }
 
-var isShowedModal = false;
+const jsonForm = {
+    selectedClasses: [
+        // "yaam1234", "bbbm5678"
+    ],
+    userData: [
+        {
+            // classId: "yaam1234",
+            // emoji: "📚",
+            // userComment: "hogefuga",
+            // attendance: {
+            //     "attended": 10,
+            //     "absent": 2,
+            //     "late": 1,
+            //     "earlyLeave": 0
+            // }
+        }
+    ]
+}
 
 document.addEventListener("DOMContentLoaded", function () {
-    const modalDialog = document.getElementById('modalDialog');
+    const modalDialog = document.getElementsByClassName('modalDialog')[0];
     const dialogButton = document.getElementById('loadTimetableData');
     const addButton = document.querySelector('#dialog-container button#add');
     const cancelButton = document.querySelector('#dialog-container button#cancel');
     const dataInfo = document.getElementById("dataInfo");
     dataInfo.innerHTML = `保存されている授業：${loadSavedItems().length}件<br>${loadSavedItems()}`;
 
-    // CSVを読み込むよ
+    // CSVを読み込む
     fetch("./resource/timetable.csv")
         .then(function (response) {
             return response.text();
@@ -79,7 +96,6 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("clicked");
         modalDialog.showModal();
         loadCheckboxStatus();
-        isShowedModal = true;
 
         // モーダルダイアログを表示する際に背景部分がスクロールしないようにする
         document.documentElement.style.overflow = "hidden";
@@ -88,12 +104,22 @@ document.addEventListener("DOMContentLoaded", function () {
     addButton.addEventListener('click', (event) => {
         const checkedItems = getCheckedItems();
         console.log("追加する講義コード一覧:", checkedItems);
-        // JSON形式にしてから保存する（常に上書き）（stringしか保存できない）
-        localStorage.setItem("addedCourses", JSON.stringify(checkedItems));
+
+        jsonForm["selectedClasses"].push(...checkedItems)
+
+        console.log("保存用データ:", jsonForm);
+
+        localStorage.removeItem("userData");
+
+        // LocalStorageに保存する
+        // json-strにして保存（文字列しか保存できないので）
+        localStorage.setItem("userData", JSON.stringify(jsonForm));
+
+        // 表示の更新
+        refreshCourseDisplay();
 
         event.preventDefault();
         modalDialog.close();
-        isShowedModal = false;
         document.documentElement.style.overflow = "auto";
     });
 
@@ -101,13 +127,16 @@ document.addEventListener("DOMContentLoaded", function () {
         // 追加した分をすべて破棄する
         event.preventDefault();
         modalDialog.close();
-        isShowedModal = false;
+
         document.documentElement.style.overflow = "auto";
     });
 
 
 });
 
+function makeJsonString(arr) {
+    return JSON.stringify(arr);
+}
 
 // CSVデータのパース
 function parseCSV(data) {
@@ -156,12 +185,15 @@ function createTableContents(timetable) {
             th.textContent = key;
         }
 
-        th.dataset.type = DATA_TYPES[key]; // データタイプをdata-type属性に設定
-        th.dataset.spDisplay = DISPLAIES_FOR_SP[key]; // スマホの表示情報を dataset に与える
+        // データタイプをdata-type属性に設定
+        th.dataset.type = DATA_TYPES[key];
+        // スマホの表示情報を dataset に与える
+        th.dataset.spDisplay = DISPLAIES_FOR_SP[key];
         th.addEventListener("click", function () {
             setSort(th, records);
         });
-        headerRow.append(th); // ヘッダー行にセルを追加
+        // ヘッダー行にセルを追加
+        headerRow.append(th);
     }
 
     // チェックボックス列のヘッダーを追加
@@ -228,8 +260,6 @@ function createTableBodyRows(tbody, records, keyword, addButton) {
             } else if (key !== "受講対象/再履修者科目名") {
                 recordText = record[key] === "" ? "-" : record[key];
                 td.innerHTML = `<p id="sp-label">${key}</p>${recordText}`;
-
-                // td.textContent = record[key]; // 各データセルに値を設定
                 const text = record[key];
 
                 if (keyword) {
@@ -271,10 +301,7 @@ function createTableBodyRows(tbody, records, keyword, addButton) {
     }
 }
 
-function selectedClass_create_table() {
-
-}
-
+// 選択されている講義の数を取得
 function getCheckedCount() {
     const allCheckboxes = document.querySelectorAll("#fullTimetableContainer tbody input[type='checkbox']");
     const checkedCount = Array.from(allCheckboxes).filter(checkbox => checkbox.checked).length;
@@ -293,21 +320,25 @@ function tsuikaikou_processing(id, isChecked) {
     });
 }
 
+// 選択されている講義コードをすべて取得
 function getCheckedItems() {
     const allCheckboxes = document.querySelectorAll("#fullTimetableContainer tbody input[type='checkbox']");
     const checkedItemIds = Array.from(allCheckboxes).filter(checkbox => checkbox.checked).map(checkbox => checkbox.id);
-    return checkedItemIds;
+    const removedDuplicates = Array.from(new Set(checkedItemIds)); // 重複を排除
+    return removedDuplicates;
 }
 
+// 保存されている講義コードを取得
 function loadSavedItems() {
-    const storedData = localStorage.getItem("addedCourses");
+    const storedData = localStorage.getItem("userData");
     if (storedData) {
-        return JSON.parse(storedData);
+        return JSON.parse(storedData)["selectedClasses"] || [];
     } else {
         return [];
     }
 }
 
+// 現在選択中の講義と、保存されている講義の差分を取得
 function getDiff() {
     const allCheckboxes = document.querySelectorAll("#fullTimetableContainer tbody input[type='checkbox']");
     const storedData = loadSavedItems();
@@ -316,6 +347,7 @@ function getDiff() {
     return Math.abs(diffCount);
 }
 
+// 保存されている講義コードに基づいてチェックボックスの状態を復元
 function loadCheckboxStatus() {
     const allCheckboxes = document.querySelectorAll("#fullTimetableContainer tbody input[type='checkbox']");
 
@@ -327,11 +359,13 @@ function loadCheckboxStatus() {
     });
 }
 
+// "追加"ボタンの表示を更新
 function updateButtonStatus(addButton) {
     const count = getCheckedCount();
     addButton.innerHTML = `追加（${getDiff()}件）`;
 }
 
+// チェックボックスにイベントリスナーを追加
 function updateCheckboxListeners(addButton) {
     document.querySelectorAll("#fullTimetableContainer tbody input[type='checkbox']")
         .forEach(checkbox => {
@@ -339,4 +373,27 @@ function updateCheckboxListeners(addButton) {
                 updateButtonStatus(addButton);
             });
         });
+}
+
+// UI更新用の共通関数
+function refreshCourseDisplay() {
+    const storedData = localStorage.getItem("userData");
+    try {
+        const addedCourses = JSON.parse(storedData)["selectedClasses"] || [];
+        const dataInfo = document.getElementById("dataInfo");
+        if (dataInfo) {
+            dataInfo.innerHTML = `保存されている授業:${addedCourses.length}件<br>${addedCourses}`;
+        }
+
+        if (typeof loadCheckboxStatus === "function") {
+            loadCheckboxStatus();
+        }
+
+        const addButton = document.querySelector('#dialog-container button#add');
+        if (addButton && typeof updateButtonStatus === "function") {
+            updateButtonStatus(addButton);
+        }
+    } catch (e) {
+        console.error("表示の更新に失敗しました:", e);
+    }
 }

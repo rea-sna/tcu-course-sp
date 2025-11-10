@@ -74,7 +74,7 @@ body {
     }
 }
 
-.dialog {
+.modalDialog {
     width: 90%;
     height: 90%;
     padding: 20px;
@@ -87,9 +87,10 @@ body {
         display: flex;
         flex-direction: column;
     }
-}
 
-#modalDialog {
+    .button-primary {
+        margin-right: 10px
+    }
 
     .filter-group {
         position: relative;
