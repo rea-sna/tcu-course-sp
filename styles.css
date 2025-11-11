@@ -53,7 +53,6 @@ body {
 
     p#dayofweek {
         margin-top: 50px;
-        ;
         margin-bottom: 0px;
         font-size: 24px;
 
@@ -464,6 +463,47 @@ body {
 /* ------------------------ */
 @media (max-width: 600px) {
 
+    .mainContainer {
+        p#dayofweek {
+            font-size: 18px;
+        }
+
+        & .todaysClass {
+            & ul li #classInfo {
+                width: 320px;
+                height: 100px;
+            }
+
+            li {
+                gap: 10px;
+            }
+
+            & ul li #classInfo #tc-subject {
+                font-size: 20px;
+            }
+
+            & ul li #classInfo #tc-teacher {
+                font-size: 13px;
+            }
+
+            & ul li #classInfo img {
+                width: 20px;
+                height: 20px;
+            }
+
+            & ul li #classInfo #tc-room {
+                font-size: 13px
+            }
+
+            & ul li #classInfo #tc-icon {
+                gap: 8px;
+            }
+        }
+
+
+    }
+
+
     thead {
         display: none;
     }
@@ -654,4 +694,6 @@ body {
         width: 100% !important;
         text-align: center !important;
     }
+
+
 }
