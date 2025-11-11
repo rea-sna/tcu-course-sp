@@ -381,7 +381,7 @@ function refreshCourseDisplay() {
 
 async function loadTable() {
     try {
-        const response = await fetch("./resource/timetable.csv");
+        const response = await fetch("./resource/43c5a4c0ada5df3ce3386851eb65e2d1_timetable.csv");
         const data = await response.text();
 
         const timetable = parseCSV(data);
