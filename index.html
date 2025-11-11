@@ -29,7 +29,7 @@
             <li>
                 <button id="recordAttendance">
                     <img src="./resource/armchair.svg" alt="出席を記録">
-                    出席記録
+                    出席登録
                 </button>
             </li>
             <li>
@@ -40,20 +40,38 @@
             </li>
         </ul>
 
+        <div class="todaysClass">
+            <ul>
+                <li id="">
+                    <p id="tc-1">1限</p>
+                    <div id="classInfo">
+                        <section id="tc-text">
+                            <p id="tc-subject">アカデミックライティング</p>
+                            <span>
+                                <p id="tc-room">32B</p>
+                                <p id="tc-teacher">山田太郎</p>
+                            </span>
+                        </section>
+                        <section id="tc-icon">
+                            <a id="tc-attendance" href="https://call.off.tcu.ac.jp/" target="_blank">
+                                <img src="./resource/961_sm_h.svg" alt="出席登録">
+                            </a>
+                            <a id="tc-webclass"
+                                href="https://webclass.tcu.ac.jp/webclass/course.php/{25yba813102}/?acs_=b2cbe397"
+                                target="_blank">
+                                <img src="./resource/195_b_hoso.svg" alt="WebClass">
+                            </a>
+                        </section>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+
         <div id="timetableContainer">
             <p id="dataInfo">
                 <!-- ここに動的に生成 -->
             </p>
-            <table id="timetable">
-                <thead>
-                    <tr>
-                        <th>教科名</th>
-                        <th>担当者</th>
-                        <th>講義コード</th>
-                        <th>出欠状況</th>
-                    </tr>
-                </thead>
-            </table>
         </div>
     </section>
     <!-- //////////////////////////////// -->

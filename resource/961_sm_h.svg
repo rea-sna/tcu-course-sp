@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <defs>
+    <style>
+      .a {
+        fill: none;
+        stroke: #000;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 2px;
+      }
+    </style>
+  </defs>
+  <title>icn_7</title>
+  <polyline class="a" points="20 24 23 27 28 22"/>
+  <line class="a" x1="13" y1="36" x2="35" y2="36"/>
+  <line class="a" x1="13" y1="12" x2="35" y2="12"/>
+  <line class="a" x1="23" y1="8" x2="25" y2="8"/>
+  <rect class="a" x="13" y="4" width="22" height="40" rx="3"/>
+  <circle cx="24" cy="40" r="1"/>
+</svg>

@@ -65,7 +65,7 @@ const jsonForm = {
     ]
 }
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
     const modalDialog = document.getElementsByClassName('modalDialog')[0];
     const dialogButton = document.getElementById('loadTimetableData');
     const addButton = document.querySelector('#dialog-container button#add');
@@ -74,23 +74,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const data = loadSavedItems();
     dataInfo.innerHTML = `保存されている授業：${data["selectedClasses"].length}件<br>${data["selectedClasses"]}`;
 
-    // fetch("./resource/timetable.csv")
-    //     .then(function (response) {
-    //         return response.text();
-    //     })
-    //     .then(function (data) {
-    //         const timetable = parseCSV(data);
-    //         const elements = createTableContents(timetable);
-    //         const master = document.getElementById("fullTimetableContainer");
-    //         const table = master.querySelector("table");
-    //         table.append(elements[0]); // thead
-    //         table.append(elements[1]); // tbody
 
-    //         // チェックボックスが作成された後にイベントリスナーを追加
-    //         updateCheckboxListeners(addButton);
-    //     });
-
-    loadTable();
+    const loadedTable = await loadTable();
+    updateMainView(loadedTable);
 
     dialogButton.addEventListener('click', async () => {
         console.log("clicked");
@@ -137,8 +123,16 @@ document.addEventListener("DOMContentLoaded", function () {
         document.documentElement.style.overflow = "auto";
     });
 
+    const recordAttendanceButton = document.getElementById("recordAttendance");
+
+    recordAttendanceButton.addEventListener("click", function () {
+        const url = "https://call.off.tcu.ac.jp/"; // Replace with the desired URL
+        window.open(url, "_blank"); // Opens the URL in a new tab
+    });
+
 
 });
+
 
 function makeJsonString(arr) {
     return JSON.stringify(arr);
@@ -384,14 +378,8 @@ function updateCheckboxListeners(addButton) {
 function refreshCourseDisplay() {
     const storedData = localStorage.getItem("userData");
     try {
-        const addedCourses = JSON.parse(storedData)["selectedClasses"];
-        const dataInfo = document.getElementById("dataInfo");
-        if (dataInfo) {
-            dataInfo.innerHTML = `保存されている授業:${addedCourses.length} 件 <br> ${addedCourses} `;
-        }
 
-        // location.reload();
-        loadTable();
+        location.reload();
 
         if (typeof loadCheckboxStatus === "function") {
             loadCheckboxStatus();
@@ -406,24 +394,115 @@ function refreshCourseDisplay() {
     }
 }
 
-function loadTable() {
-    fetch("./resource/timetable.csv")
-        .then(function (response) {
-            return response.text();
-        })
-        .then(function (data) {
-            const timetable = parseCSV(data);
-            const elements = createTableContents(timetable);
-            const master = document.getElementById("fullTimetableContainer");
-            const table = master.querySelector("table");
+async function loadTable() {
+    try {
+        const response = await fetch("./resource/timetable.csv");
+        const data = await response.text();
 
-            // 既存の内容をクリア
-            table.innerHTML = "";
+        const timetable = parseCSV(data);
+        const elements = createTableContents(timetable);
+        const master = document.getElementById("fullTimetableContainer");
+        const table = master.querySelector("table");
 
-            table.append(elements[0]); // thead
-            table.append(elements[1]); // tbody
+        // 既存の内容をクリア
+        table.innerHTML = "";
 
-            const addButton = document.querySelector('#dialog-container button#add');
-            updateCheckboxListeners(addButton);
-        });
+        table.append(elements[0]); // thead
+        table.append(elements[1]); // tbody
+
+        const addButton = document.querySelector('#dialog-container button#add');
+        updateCheckboxListeners(addButton);
+
+        return timetable;
+    } catch (error) {
+        console.error("時間割データの読み込みに失敗しました:", error);
+        throw error;
+    }
 }
+
+// 今日の曜日を取得する関数
+function getTodayDayOfWeek() {
+    const daysOfWeek = ["日", "月", "火", "水", "木", "金", "土"];
+    const today = new Date();
+    const dayIndex = today.getDay(); // 0(日曜)〜6(土曜)
+    return daysOfWeek[dayIndex];
+}
+
+async function updateMainView(loadedTable) {
+    const items = loadSavedItems();
+    console.log("loaded items:", items["selectedClasses"]);
+    const addedCourses = items["selectedClasses"];
+    const dataInfo = document.getElementById("dataInfo");
+
+    // 今日の曜日を取得
+    const todayDow = getTodayDayOfWeek();
+    console.log("今日の曜日:", todayDow);
+
+    if (dataInfo) {
+        dataInfo.innerHTML = `保存されている授業:${addedCourses.length} 件 <br> ${addedCourses} `;
+        console.log("addedCourses:", addedCourses);
+        const ulElement = document.querySelector('.todaysClass ul');
+
+        // テンプレートとして最初のli要素を取得
+        const liTemplate = ulElement.querySelector('li');
+
+        // ulの中身をクリア
+        ulElement.innerHTML = '';
+
+        for (let i = 0; i < addedCourses.length; i++) {
+            const classId = addedCourses[i];
+            const classInfo = loadedTable.find(item => item["講義コード"] === classId);
+
+            if (!classInfo) {
+                console.warn(`講義コード ${classId} の情報が見つかりません`);
+                continue;
+            }
+
+            console.log("classInfo:", classInfo);
+            console.log("曜日比較:", classInfo["曜"], "==", todayDow, "結果:", classInfo["曜"] == todayDow);
+            console.log("限比較:", classInfo["限"], "型:", typeof classInfo["限"]);
+
+            // 今日の曜日と一致する授業のみ表示
+            if (classInfo["曜"] == todayDow) {
+                // liテンプレートを複製
+                const liElement = liTemplate.cloneNode(true);
+
+                // 時限の設定
+                const period = classInfo["限"];
+                liElement.querySelector("p").id = `tc-${period}`;
+                liElement.querySelector("p").textContent = `${period}限`;
+
+                // 授業情報の設定
+                const text = liElement.querySelector("#classInfo #tc-text");
+                text.querySelector("#tc-subject").textContent = classInfo["科目名"];
+                text.querySelector("span #tc-room").textContent = classInfo["教室"];
+                text.querySelector("span #tc-teacher").textContent = classInfo["担当者"];
+
+                // WebClassリンクの設定
+                const iconSection = liElement.querySelector("#classInfo #tc-icon");
+                iconSection.querySelector("#tc-webclass").href = `https://webclass.tcu.ac.jp/webclass/course.php/25${classId}/`;
+
+                console.log("授業を追加:", classInfo["科目名"], period + "限");
+
+                // 複製した要素をulに追加
+                ulElement.appendChild(liElement);
+            }
+        }
+    }
+}
+
+// 現在の時間に応じて挨拶を変更
+document.addEventListener("DOMContentLoaded", function () {
+    const heading = document.querySelector("h1");
+
+    const now = new Date();
+    const hours = now.getHours();
+
+    if (hours >= 5 && hours < 12) {
+        heading.textContent = "おはようございます ☀️";
+    } else if (hours >= 12 && hours < 18) {
+        heading.textContent = "こんにちは 🌞";
+    } else {
+        heading.textContent = "こんばんは 🌙";
+    }
+});

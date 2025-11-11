@@ -50,6 +50,77 @@ body {
             transition: background 0.3s ease;
         }
     }
+
+    .todaysClass {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px 0;
+
+        li {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            padding: 0px;
+
+        }
+
+        & ul li #classInfo {
+            width: 500px;
+            height: 120px;
+            border: 2.5px solid #769FCD;
+            border-radius: 25px;
+            align-items: center;
+            margin: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        & ul li #classInfo #tc-text {
+            width: 100%;
+            margin: 20px;
+        }
+
+        & ul li #classInfo #tc-subject {
+            font-size: 26px;
+            font-weight: bold;
+            text-align: left;
+
+            margin-bottom: 0px;
+        }
+
+        & ul li #classInfo #tc-icon {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-right: 20px;
+            ;
+        }
+
+        & ul li #classInfo img {
+            width: 30px;
+            height: 30px;
+            vertical-align: middle;
+        }
+
+
+        & ul li #classInfo span {
+            justify-content: space-between;
+            display: flex;
+        }
+
+        & ul li #classInfo #tc-teacher {
+            text-align: right;
+            margin-top: 10px;
+        }
+
+        & ul li #classInfo #tc-room {
+            text-align: right;
+            margin-top: 10px;
+        }
+
+
+    }
 }
 
 
