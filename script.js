@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const cancelButton = document.querySelector('#dialog-container button#cancel');
     const dataInfo = document.getElementById("dataInfo");
     const data = loadSavedItems();
-    dataInfo.innerHTML = `保存されている授業：${data["selectedClasses"].length}件<br>${data["selectedClasses"]}`;
+    // dataInfo.innerHTML = `保存されている授業：${data["selectedClasses"].length}件<br>${data["selectedClasses"]}`;
 
 
     const loadedTable = await loadTable();
@@ -437,9 +437,11 @@ async function updateMainView(loadedTable) {
     // 今日の曜日を取得
     const todayDow = getTodayDayOfWeek();
     console.log("今日の曜日:", todayDow);
+    const todayDowElement = document.getElementById("dayofweek");
+    todayDowElement.textContent = `今日（${todayDow}曜日）の授業`;
 
     if (dataInfo) {
-        dataInfo.innerHTML = `保存されている授業:${addedCourses.length} 件 <br> ${addedCourses} `;
+        // dataInfo.innerHTML = `保存されている授業:${addedCourses.length} 件 <br> ${addedCourses} `;
         console.log("addedCourses:", addedCourses);
         const ulElement = document.querySelector('.todaysClass ul');
 

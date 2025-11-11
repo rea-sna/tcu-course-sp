@@ -49,13 +49,23 @@ body {
             cursor: pointer;
             transition: background 0.3s ease;
         }
+
+
+
+    }
+
+    p#dayofweek {
+        margin-top: 50px;
+        ;
+        margin-bottom: 0px;
+        font-size: 24px;
+
     }
 
     .todaysClass {
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 20px 0;
 
         li {
             display: flex;
