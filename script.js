@@ -228,13 +228,13 @@ function createTableBodyRows(tbody, records, keyword, addButton) {
                     td.innerHTML = `<p id="sp-label">${key}（クリックでシラバスに遷移）</p><a href='${syllabusURL}' target="_blank" class='course-name-link' >${record[key]}</a>`;
 
 
-                    if (keyword) {
-                        const regexp = new RegExp(keyword, "g");
-                        const replaced = td.innerHTML.replace(regexp, (match) => {
-                            return `<mark>${match}</mark>`;
-                        });
-                        td.innerHTML = replaced; // ハイライトを反映させるためにinnerHTMLを使用
-                    }
+                    // if (keyword) {
+                    //     const regexp = new RegExp(keyword, "g");
+                    //     const replaced = td.innerHTML.replace(regexp, (match) => {
+                    //         return `<mark>${match}</mark>`;
+                    //     });
+                    //     td.innerHTML = replaced; // ハイライトを反映させるためにinnerHTMLを使用
+                    // }
 
                     tr.appendChild(td);
 
@@ -330,21 +330,6 @@ function loadSavedItems() {
         return jsonForm;
     }
 }
-
-// 現在選択中の講義と、保存されている講義の差分を取得
-// function getDiff() {
-//     const allCheckboxes = document.querySelectorAll("#fullTimetableContainer tbody input[type='checkbox']");
-//     const storedData = loadSavedItems();
-
-//     const checkedCount = Array.from(allCheckboxes).filter(checkbox => checkbox.checked).map(checkbox => checkbox.id);
-//     console.log("checkedCount:", checkedCount);
-//     console.log("storedData:", storedData);
-
-
-//     const diffCount = storedData.length - checkedCount.length;
-
-//     return Math.abs(diffCount);
-// }
 
 // 保存されている講義コードに基づいてチェックボックスの状態を復元
 function loadCheckboxStatus() {
@@ -489,6 +474,11 @@ async function updateMainView(loadedTable) {
                 // 複製した要素をulに追加
                 ulElement.appendChild(liElement);
             }
+        }
+
+        if (ulElement.children.length === 0) {
+            const noClassMessage = document.getElementById("noClassMessage");
+            noClassMessage.textContent = "今日は登録されている授業はありません。";
         }
     }
 }
