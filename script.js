@@ -467,7 +467,7 @@ async function updateMainView(loadedTable) {
 
                 // WebClassリンクの設定
                 const iconSection = liElement.querySelector("#classInfo #tc-icon");
-                iconSection.querySelector("#tc-webclass").href = `https://webclass.tcu.ac.jp/webclass/course.php/25${classId}/`;
+                iconSection.querySelector("#tc-webclass").href = `https://webclass.tcu.ac.jp/webclass/course.php/25${classId}//login`;
 
                 console.log("授業を追加:", classInfo["科目名"], period + "限");
 
