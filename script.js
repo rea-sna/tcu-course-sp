@@ -536,7 +536,7 @@ async function displayCommits() {
         console.log('Commit:', commit);
         const commitHTML = `
         <ul>
-            <li id="commit-date">${new Date(commit.commit.author.date).toLocaleString('ja-JP')}</li>
+            <li id="commit-date">${new Date(commit.commit.author.date).toLocaleDateString('ja-JP')}</li>
             <li><a href="${commit.html_url}" target="_blank">${commit.commit.message}</a></li>
         </ul>
     `;
