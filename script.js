@@ -23,7 +23,6 @@ const DISPLAIES_FOR_SP = {
     教室: "normal",
     備考: "normal"
 };
-
 const dataName = {
     曜: "dow",
     限: "hour",
@@ -35,8 +34,7 @@ const dataName = {
     講義コード: "courseCode",
     教室: "room",
     備考: "notes"
-}
-
+};
 const shortenSemester = {
     前期前半: "1Q",
     前期後半: "2Q",
@@ -44,8 +42,7 @@ const shortenSemester = {
     後期後半: "4Q",
     通年: "通年",
     集中講義: "集中"
-}
-
+};
 const jsonForm = {
     selectedClasses: [
         // "yaam1234", "bbbm5678"
@@ -63,20 +60,20 @@ const jsonForm = {
             // }
         }
     ]
-}
+};
 
 document.addEventListener("DOMContentLoaded", async function () {
     const modalDialog = document.getElementsByClassName('modalDialog')[0];
     const dialogButton = document.getElementById('loadTimetableData');
     const addButton = document.querySelector('#dialog-container button#add');
     const cancelButton = document.querySelector('#dialog-container button#cancel');
-    const dataInfo = document.getElementById("dataInfo");
-    const data = loadSavedItems();
+    // const dataInfo = document.getElementById("dataInfo");
+    // const data = loadSavedItems();
     // dataInfo.innerHTML = `保存されている授業：${data["selectedClasses"].length}件<br>${data["selectedClasses"]}`;
-
 
     const loadedTable = await loadTable();
     updateMainView(loadedTable);
+    displayCommits();
 
     dialogButton.addEventListener('click', async () => {
         console.log("clicked");
@@ -126,13 +123,12 @@ document.addEventListener("DOMContentLoaded", async function () {
     const recordAttendanceButton = document.getElementById("recordAttendance");
 
     recordAttendanceButton.addEventListener("click", function () {
-        const url = "https://call.off.tcu.ac.jp/"; // Replace with the desired URL
-        window.open(url, "_blank"); // Opens the URL in a new tab
+        const url = "https://call.off.tcu.ac.jp/";
+        window.open(url, "_blank");
     });
 
 
 });
-
 
 function makeJsonString(arr) {
     return JSON.stringify(arr);
@@ -436,40 +432,52 @@ async function updateMainView(loadedTable) {
         // ulの中身をクリア
         ulElement.innerHTML = '';
 
+        var classInfo = [];
+
         for (let i = 0; i < addedCourses.length; i++) {
             const classId = addedCourses[i];
-            const classInfo = loadedTable.find(item => item["講義コード"] === classId);
+            console.log("処理中の講義コード:", classId);
+
+            classInfo = classInfo.concat(loadedTable.filter((item) => item["講義コード"] === classId));
+
+            console.log("取得した授業情報:", classInfo);
 
             if (!classInfo) {
                 console.warn(`講義コード ${classId} の情報が見つかりません`);
                 continue;
             }
+        }
 
-            console.log("classInfo:", classInfo);
-            console.log("曜日比較:", classInfo["曜"], "==", todayDow, "結果:", classInfo["曜"] == todayDow);
-            console.log("限比較:", classInfo["限"], "型:", typeof classInfo["限"]);
+        for (let p = 0; p < classInfo.length; p++) {
+            const classId = classInfo[p]["講義コード"];
+            const classInfoEntry = classInfo[p];
+
+            console.log("処理中の授業情報:", classInfoEntry);
+
+            console.log("曜日比較:", classInfoEntry["曜"], "==", todayDow, "結果:", classInfoEntry["曜"] == todayDow);
+            console.log("限比較:", classInfoEntry["限"], "型:", typeof classInfoEntry["限"]);
 
             // 今日の曜日と一致する授業のみ表示
-            if (classInfo["曜"] == todayDow) {
+            if (classInfoEntry["曜"] == todayDow) {
                 // liテンプレートを複製
                 const liElement = liTemplate.cloneNode(true);
 
                 // 時限の設定
-                const period = classInfo["限"];
+                const period = classInfoEntry["限"];
                 liElement.querySelector("p").id = `tc-${period}`;
                 liElement.querySelector("p").textContent = `${period}限`;
 
                 // 授業情報の設定
                 const text = liElement.querySelector("#classInfo #tc-text");
-                text.querySelector("#tc-subject").textContent = classInfo["科目名"];
-                text.querySelector("span #tc-room").textContent = classInfo["教室"];
-                text.querySelector("span #tc-teacher").textContent = classInfo["担当者"];
+                text.querySelector("#tc-subject").textContent = classInfoEntry["科目名"];
+                text.querySelector("span #tc-room").textContent = classInfoEntry["教室"];
+                text.querySelector("span #tc-teacher").textContent = classInfoEntry["担当者"];
 
                 // WebClassリンクの設定
                 const iconSection = liElement.querySelector("#classInfo #tc-icon");
-                iconSection.querySelector("#tc-webclass").href = `https://webclass.tcu.ac.jp/webclass/course.php/25${classId}//login`;
+                iconSection.querySelector("#tc-webclass").href = `https://webclass.tcu.ac.jp/webclass/login.php?group_id=25${classId}&auth_mode=SAML`;
 
-                console.log("授業を追加:", classInfo["科目名"], period + "限");
+                console.log("授業を追加:", classInfoEntry["科目名"], period + "限");
 
                 // 複製した要素をulに追加
                 ulElement.appendChild(liElement);
@@ -481,6 +489,12 @@ async function updateMainView(loadedTable) {
             noClassMessage.textContent = "今日は登録されている授業はありません。";
         }
     }
+}
+
+function getClassInfoById(loadedTable, classId) {
+    // const items = ;
+    console.log(items);
+    return items;
 }
 
 // 現在の時間に応じて挨拶を変更
@@ -498,3 +512,34 @@ document.addEventListener("DOMContentLoaded", function () {
         heading.textContent = "こんばんは 🌙";
     }
 });
+
+// GitHubのリリース情報を取得して表示する関数
+// 基本的な取得例
+async function getGitHubCommits(owner, repo) {
+    const url = `https://api.github.com/repos/${owner}/${repo}/commits`;
+
+    try {
+        const response = await fetch(url);
+        const releases = await response.json();
+        console.log('Fetched commits:', releases);
+        return releases;
+    } catch (error) {
+        console.error('Error fetching releases:', error);
+    }
+}
+
+async function displayCommits() {
+    const commits = await getGitHubCommits('rea-sna', 'tcu-course-sp');
+    const container = document.getElementById('updateHistory');
+
+    commits.forEach(commit => {
+        console.log('Commit:', commit);
+        const commitHTML = `
+        <ul>
+            <li id="commit-date">${new Date(commit.commit.author.date).toLocaleString('ja-JP')}</li>
+            <li><a href="${commit.html_url}" target="_blank">${commit.commit.message}</a></li>
+        </ul>
+    `;
+        container.innerHTML += commitHTML;
+    });
+}

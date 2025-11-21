@@ -457,6 +457,36 @@ body {
     }
 }
 
+footer {
+    text-align: center;
+    margin: 50px;
+
+    #updateHistory {
+        text-align: left;
+        display: inline-block;
+    }
+
+    & ul {
+        display: flex;
+        list-style-type: none;
+    }
+
+    & ul li {
+        display: inline-block;
+        padding: 5px 15px;
+        font-size: 16px;
+    }
+
+    & ul li#commit-date {
+        text-align: right;
+        width: 180px;
+    }
+
+    & a {
+        color: #333333;
+    }
+}
+
 
 /* ------------------------ */
 /* responsive configuration */
